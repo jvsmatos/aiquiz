@@ -9,6 +9,7 @@ export default function QuizContainer() {
 
     const isQuizComplete = userAnswers != null ? userAnswers.length === QUESTIONS.length : false;
     const isPlayerSetup = userAnswers === null;
+    const currentQuestionIndex = userAnswers != null && userAnswers.length;
 
     // Handler that receives props from Player component
     function handleStartQuiz(name, quizSubject){
@@ -22,7 +23,7 @@ export default function QuizContainer() {
             {isPlayerSetup ? (
             <Player onStartQuiz={handleStartQuiz} />
             ) : !isQuizComplete ? (
-            <QuizQuestions />
+            <QuizQuestions questionIndex={currentQuestionIndex} />
             ) : (
             <Summary />
             )}
