@@ -16,18 +16,22 @@ export default function QuizContainer() {
         setUserAnswers([]);
     }
 
+    function handleSelectedAnswers({selectedAnswer, isCorrect}){
+        setUserAnswers(prevAnswers => [...prevAnswers,
+            { selectedAnswer, isCorrect },
+        ]);
+    }
+
     return (
-        <>
         <section className='flex flex-col items-center px-4 bg-background w-full max-w-3xl min-h-[500px]'>
             
             {isPlayerSetup ? (
             <Player onStartQuiz={handleStartQuiz} />
             ) : !isQuizComplete ? (
-            <QuizQuestions questionIndex={currentQuestionIndex} />
+            <QuizQuestions key={currentQuestionIndex} questionIndex={currentQuestionIndex} onSubmitAnswer={handleSelectedAnswers} />
             ) : (
             <Summary />
             )}
         </section>
-        </>
     );
 }
