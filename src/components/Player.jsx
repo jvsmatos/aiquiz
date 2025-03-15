@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardFooter } from './ui/card.jsx';
 
 
-export default function Player({name, onStartQuiz}) {
+export default function Player({onStartQuiz}) {
   const [playerName, setPlayerName] = useState('Player');
   const [isEditing, setIsEditing] = useState(false);
   const [showSubject, setShowSubject] = useState(false);

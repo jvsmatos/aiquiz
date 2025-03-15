@@ -1,5 +1,5 @@
 import Player from "./Player";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import QuizQuestions from "./QuizQuestions";
 import Summary from "./Summary";
 import QUESTIONS from '@/questions.js';
@@ -12,7 +12,7 @@ export default function QuizContainer() {
     const currentQuestionIndex = userAnswers != null && userAnswers.length;
 
     // Handler that receives props from Player component
-    function handleStartQuiz(name, quizSubject){
+    function handleStartQuiz(){
         setUserAnswers([]);
     }
 
@@ -30,7 +30,7 @@ export default function QuizContainer() {
             ) : !isQuizComplete ? (
             <QuizQuestions key={currentQuestionIndex} questionIndex={currentQuestionIndex} onSubmitAnswer={handleSelectedAnswers} />
             ) : (
-            <Summary />
+            <Summary results={userAnswers}/>
             )}
         </section>
     );

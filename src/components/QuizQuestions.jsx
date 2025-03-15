@@ -45,13 +45,31 @@ export default function QuizQuestions({questionIndex, onSubmitAnswer}) {
     }
 
     useEffect(() => {
-        //const timer = setTimeout()
+        if(answer.isSubmitted) return;
 
-    });
+        const timer = setInterval(() => {
+            setTimeRemaining((prev) => {
+                if(prev <= 1){
+                    clearInterval(timer);
+                    setAnswer(prevAnswer => (
+                        {
+                        ...prevAnswer,
+                        isSubmitted: true,
+                        isCorrect: 'timeout'
+                        }
+                    ));
+                }
+                return prev-1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [answer.isSubmitted]);
 
     let isSelected = answer.selectedAnswer === '' ? false : true;
     const correctCss    = 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
     const incorrectCss  = 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
+    const questionLvl   = QUESTIONS[questionIndex].difficulty;
 
     // Suffling answer options only on first render
     const suffledAnswers = useRef();
@@ -68,7 +86,11 @@ export default function QuizQuestions({questionIndex, onSubmitAnswer}) {
                     {QUESTIONS[questionIndex].question}
                 </CardTitle>
                 <div className='flex flex-col items-center gap-1.5'>
-                    <Badge className='bg-red-700 text-gray-200'>Hard</Badge>
+                    <Badge
+                     className={`${questionLvl === 'easy' ? 'bg-green-700' : questionLvl === 'hard' ? 'bg-red-700' : 'bg-blue-800'} text-gray-200`}
+                    >
+                    {questionLvl.toUpperCase()}
+                    </Badge>
                     <span className='text-sm text-center text-muted-foreground'>Question {questionIndex+1}/{QUESTIONS.length}</span>
                 </div>
             </div>
@@ -77,7 +99,7 @@ export default function QuizQuestions({questionIndex, onSubmitAnswer}) {
                 <Clock size={14} />
                 <span>Time remaining: {timeRemaining}s</span>
             </div>
-            <Progress value={timeRemaining*100} />
+            <Progress value={(timeRemaining/10)*100} />
         </CardHeader>
 
         <CardContent className='w-full'>
@@ -100,7 +122,7 @@ export default function QuizQuestions({questionIndex, onSubmitAnswer}) {
                     </div>
                 )}
             </RadioGroup>
-            {(answer.isSubmitted && answer.isCorrect) &&
+            {(answer.isSubmitted && answer.isCorrect === true) &&
             <div className='mt-5 p-3 rounded-lg border bg-muted'>
                 <p className='font-semibold text-sm'>
                     <span className='text-green-600 flex items-center gap-2'>
@@ -139,12 +161,12 @@ export default function QuizQuestions({questionIndex, onSubmitAnswer}) {
         </CardContent>
 
         <CardFooter className='w-full'>
-            {answer.isSubmitted === true ? (
+            {answer.isSubmitted === true && questionIndex != (QUESTIONS.length-1) ? (
                 <Button className='w-full' onClick={handleNextQuestion}>
                     Next Question
                 </Button>
-            ) : (questionIndex === 4 && answer.isSubmitted) ? (
-                <Button className='w-full'>
+            ) : (questionIndex === (QUESTIONS.length-1) && answer.isSubmitted) ? (
+                <Button className='w-full' onClick={handleNextQuestion}>
                     See Results
                 </Button>
             ) : (
