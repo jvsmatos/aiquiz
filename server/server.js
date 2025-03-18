@@ -10,6 +10,7 @@ const app = express();
 
 app.use(cors({ origin: 'https://aiquiz-peach.vercel.app' }));
 app.use(express.json());
+app.set("trust proxy", true);
 
 /**
  * POST route to generate a quiz based on the given subject.
@@ -93,5 +94,3 @@ app.post('/api/generate-quiz', rateLimiter, async (req, res) => {
 // Start the server on port 3000
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`[SERVER] Running on port ${PORT}`));
-
-export default app;

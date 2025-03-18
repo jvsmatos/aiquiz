@@ -37,7 +37,7 @@ export function rateLimiter(req, res, next) {
   }
 
   // Retrieve the client's IP address
-  const ip = req.ip || req.connection.remoteAddress;
+  const ip = req.headers["x-forwarded-for"]?.split(",")[0]?.trim() || req.ip;
   let ipCount = perIpCounts.get(ip) || 0;
 
   // Log request for debugging
