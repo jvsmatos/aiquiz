@@ -2,12 +2,13 @@ import { Card, CardContent, CardHeader, CardDescription, CardFooter, CardTitle }
 import { Button } from './ui/button.jsx';
 import { Trophy, Clock, RefreshCw, Home  } from 'lucide-react';
 
-export default function Summary({results}) {
+export default function Summary({results, onRestart}) {
+  //Stats calcs
   const { correctAnswers, incorrectAnswers, expiredAnswers } = results.reduce(
     (acc, item) => {
-      if (item.isCorrect === "timeout") {
+      if (item.status === "timeout") {
         acc.expiredAnswers += 1; 
-      } else if (item.isCorrect) {
+      } else if (item.status === 'correct') {
         acc.correctAnswers += 1;
       } else {
         acc.incorrectAnswers += 1;
@@ -16,6 +17,12 @@ export default function Summary({results}) {
     },
     { correctAnswers: 0, incorrectAnswers: 0, expiredAnswers: 0 } 
   );
+
+  //Starting new Quiz
+  function handleOnNewQuiz(){
+    localStorage.removeItem('quizData');
+    window.location.reload();
+  }
 
   const score = (correctAnswers / results.length) * 100;
 
@@ -55,7 +62,7 @@ export default function Summary({results}) {
             </div>
           </div>
 
-          {/* Timeout to be displayed only if >0 */}
+          {/* Timeout to be displayed only if there was some timeout > 0 */}
           {expiredAnswers > 0 && (
             <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg text-center border border-yellow-200 dark:border-yellow-800">
               <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 flex items-center justify-center gap-2">
@@ -84,13 +91,14 @@ export default function Summary({results}) {
 
         <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
+            onClick={onRestart}
             className="w-full sm:w-auto"
             variant="outline"
           >
             <RefreshCw className="mr-2 h-4 w-4" />
             Try the same Quiz again
           </Button>
-          <Button className="w-full sm:w-auto">
+          <Button onClick={handleOnNewQuiz} className="w-full sm:w-auto">
             <Home className="mr-2 h-4 w-4" />
             Try a new Quiz
           </Button>

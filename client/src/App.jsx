@@ -20,7 +20,7 @@ export function App() {
         <QuizContainer />
       </main>
 
-      <footer className='w-full mt-8 text-sm text-gray-500'>
+      <footer className='w-full mt-8 text-sm text-gray-500 fixed bottom-0'>
         <div className='max-w-5xl mx-auto text-center'>
           <p>
             © {new Date().getFullYear()} AI Quiz Generator. All rights reserved.
