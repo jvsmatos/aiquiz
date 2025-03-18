@@ -90,8 +90,8 @@ app.post('/api/generate-quiz', rateLimiter, async (req, res) => {
   }
 });
 
-export default app; // Comment this line for localhost usage
+// Start the server on port 3000
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`[SERVER] Running on port ${PORT}`));
 
-// Start the server on port 3000 | Comment this lines bellow for Vercel
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => console.log(`[SERVER] Running on port ${PORT}`));
+export default app;
