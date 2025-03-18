@@ -8,7 +8,15 @@ import { rateLimiter } from './lib/rateLimiter.js';
 dotenv.config();
 const app = express();
 
-app.use(cors({ origin: 'https://aiquiz-peach.vercel.app' }));
+app.use(
+  cors({
+    origin: 'https://aiquiz-peach.vercel.app',
+    methods: ['POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  })
+);
+
+app.options('/api/generate-quiz', cors());
 app.use(express.json());
 
 /**
