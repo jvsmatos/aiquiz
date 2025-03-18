@@ -65,7 +65,7 @@ app.post('/api/generate-quiz', rateLimiter, async (req, res) => {
     console.log('[DEBUG] Parsed Data:', JSON.stringify(parsedData, null, 2));
 
     // Extract the questions array from the parsed data
-    const questions = parsedData.quiz || parsedData;
+    const questions = parsedData.quiz || parsedData.questions || parsedData;
 
     // Validate the extracted questions
     if (!validateQuestions(questions)) {
@@ -90,6 +90,8 @@ app.post('/api/generate-quiz', rateLimiter, async (req, res) => {
   }
 });
 
-// Start the server on port 3000
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`[SERVER] Running on port ${PORT}`));
+export default app; // Comment this line for localhost usage
+
+// Start the server on port 3000 | Comment this lines bellow for Vercel
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => console.log(`[SERVER] Running on port ${PORT}`));
