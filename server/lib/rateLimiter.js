@@ -1,6 +1,6 @@
 // Constants for limits and 24-hour period
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
-const PER_IP_LIMIT = 10;    // Maximum 10 requests per day per IP
+const PER_IP_LIMIT = 5;    // Maximum 5 requests per day per IP
 const GLOBAL_LIMIT = 100;   // Maximum 100 total requests per day for all IPs
 
 // Variables to store request counts and the last reset timestamp
