@@ -2,26 +2,19 @@ export const validateQuestions = (questions) => {
     try {        
         // 1. Basic check: The data must be an array with exactly 8 questions
         if (!Array.isArray(questions)) {
-            console.error('[VALIDATION] The received data is not an array.');
+            console.error(`[ERROR] The received data is not an array. [${requestId}]`);
             return false;
         }
 
         if (questions.length !== 8) {
-            console.error(
-                `[VALIDATION] Incorrect number of questions. Expected: 8 | Received: ${questions.length}`,
-                "\nReceived data:", JSON.stringify(questions, null, 2)
-            );
+            console.error(`[ERROR] Expected 8 questions, received ${questions.length} [${requestId}]`);
             return false;
         }
 
         // 2. Check for unique question IDs
         const uniqueIds = new Set(questions.map(q => q.id));
         if (uniqueIds.size !== 8) {
-            console.error(
-                `[VALIDATION] Duplicate question IDs found. Expected: 8 unique | Found: ${uniqueIds.size}`,
-                "\nDuplicate IDs:", 
-                questions.filter(q => !uniqueIds.has(q.id)).map(q => q.id) // Shows duplicate IDs
-            );
+            console.error(`[ERROR] Duplicate question IDs found [${requestId}]`);
             return false;
         }
 
@@ -41,11 +34,7 @@ export const validateQuestions = (questions) => {
         );
 
         if (invalidQuestions.length > 0) {
-            console.error(
-                `[VALIDATION] ${invalidQuestions.length} question(s) have an invalid structure:`,
-                "\nDetailed errors:", 
-                invalidQuestions.map((q, index) => `Question ${index + 1} (ID: ${q.id}): ${JSON.stringify(q, null, 2)}`)
-            );
+            console.error(`[ERROR] ${invalidQuestions.length} invalid questions [${requestId}]`);
             return false;
         }
 
@@ -60,23 +49,14 @@ export const validateQuestions = (questions) => {
             difficultyCounts.medium === 3 &&
             difficultyCounts.hard === 3
         )) {
-            console.error(
-                "[VALIDATION] Incorrect difficulty distribution.",
-                "\nExpected: easy=2 | medium=3 | hard=3",
-                "\nReceived:", JSON.stringify(difficultyCounts, null, 2)
-            );
+            console.error(`[ERROR] Incorrect difficulty distribution [${requestId}]`);
             return false;
         }
 
         return true;
 
     } catch (error) {
-        console.error(
-            '[VALIDATION] Critical error during validation:',
-            "\nMessage:", error.message,
-            "\nStack trace:", error.stack,
-            "\nReceived data:", JSON.stringify(questions, null, 2)
-        );
+        console.error(`[ERROR] Validation failed: ${error.message} [${requestId}]`);
         return false;
     }
 };

@@ -12,7 +12,8 @@ export const generateQuizQuestions = async (subject) => {
     const response = await api.post('/api/generate-quiz', { subject }); // Send the subject via POST to backend
     return response.data; // Response from backend with data requested
   } catch (error) {
-    console.error('API Error:', error.response?.data || error.message);
-    throw new Error('Failed to generate questions');
+    const errorMessage = error.response?.data?.error || 'Connection error. Please check your network.';
+    console.error('API Error:', errorMessage);
+    throw new Error(errorMessage);
   }
 };

@@ -16,6 +16,17 @@ export default function Quizquestions({questions, questionIndex, onSubmitAnswer}
         status: 'idle' // Options: 'idle', 'correct', 'incorrect', 'timeout'
     });
 
+    const cardRef = useRef(null);
+    //Watching isSubmitted and then scrolling smoothly to Card
+    useEffect(() => {
+        if (answer.isSubmitted && cardRef.current) {
+            cardRef.current.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+    }, [answer.isSubmitted]);
+
     //Update the state with selected option
     function handleSelectedOption(option){
         setAnswer(prevAnswer => ({
@@ -83,7 +94,7 @@ export default function Quizquestions({questions, questionIndex, onSubmitAnswer}
 
 
     return (
-    <Card className='w-full max-w-[650px] h-full items-center'>
+    <Card className='w-full max-w-[650px] h-full items-center' ref={cardRef}>
         <CardHeader className='w-full'>
             <div className='flex justify-between items-center gap-3'>
                 <CardTitle className='text-xl font-bold'>

@@ -82,17 +82,16 @@ export default function QuizContainer() {
   // Responsible for starting the Quiz and send the subject to API
   const handleStartQuiz = async (subject) => {
     dispatch({ type: "START_LOADING", subject });
+    
     try {
       const questions = await generateQuizQuestions(subject);
       dispatch({ type: "SET_QUESTIONS", questions });
+
     } catch (error) {
       localStorage.removeItem('quizData');
       dispatch({
         type: "SET_ERROR",
-        error:
-          error.response?.data?.error === 'invalid_questions'
-            ? 'Unable to generate questions for this topic.'
-            : 'Unable to establish connection, sorry.'
+        error: error.message
       });
     }
   };

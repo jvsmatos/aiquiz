@@ -27,42 +27,41 @@ function formatTimestamp(timestamp) {
  */
 export function rateLimiter(req, res, next) {
   const now = Date.now();
+  const { clientIp, requestId } = req;
 
   // Reset all counters if more than 24 hours have passed
   if (now - lastReset > DAY_IN_MS) {
     perIpCounts.clear();
     globalCount = 0;
     lastReset = now;
-    console.info(`[RATE LIMIT] Counters automatically reset at ${formatTimestamp(now)}`);
+    console.log(`[RATE LIMIT] Counters automatically reset at ${formatTimestamp(now)}`);
   }
 
-  // Retrieve the client's IP address
-  const ip = req.headers["x-forwarded-for"]?.split(",")[0]?.trim() || req.ip;
-  let ipCount = perIpCounts.get(ip) || 0;
-
-  // Log request for debugging
-  console.log(`[USER] IP ${ip} made a request at ${formatTimestamp(now)}.`);
+  let ipCount = perIpCounts.get(clientIp) || 0;
+  console.log(`[INFO] IP ${clientIp} made a request at ${formatTimestamp(now)}.`);
 
   // Check if the IP exceeded its daily limit
   if (ipCount >= PER_IP_LIMIT) {
-    console.warn(`[RATE LIMIT] IP ${ip} blocked for exceeding ${PER_IP_LIMIT} daily requests.`);
-    return res.status(429).json({ error: 'Your daily request limit has been reached. Please try again tomorrow.' });
+    const remainingTime = DAY_IN_MS - (now - lastReset);
+    const hours = Math.floor(remainingTime / (1000 * 60 * 60)).toString().padStart(2, '0');
+    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+    console.log(`[RATE LIMIT] IP ${clientIp} blocked for exceeding ${PER_IP_LIMIT} daily requests. Retry in ${hours}:${minutes} hours [${requestId}]`);
+    return res.status(429).json({ error: `Your daily request limit has been reached. Try again in ${hours}h ${minutes}m.` });
   }
 
   // Check if the global request limit has been reached
   if (globalCount >= GLOBAL_LIMIT) {
-    console.warn(`[RATE LIMIT] Global daily limit of ${GLOBAL_LIMIT} requests reached.`);
-    return res.status(429).json({ error: 'Global daily request limit reached. Please try again tomorrow.' });
+    console.warn(`[RATE LIMIT] Global daily limit of ${GLOBAL_LIMIT} requests reached. [${requestId}]`);
+    return res.status(429).json({ error: `Global daily request limit reached. Try again in ${hours}h ${minutes}m.` });
   }
 
   // Increment request counters
-  perIpCounts.set(ip, ipCount + 1);
+  perIpCounts.set(clientIp, ipCount + 1);
   globalCount++;
 
   // Log the current request count for this IP and globally
-  console.log(`[RATE LIMIT] IP ${ip} has used ${ipCount + 1}/${PER_IP_LIMIT} requests.`);
-  console.log(`[RATE LIMIT] Total requests used: ${globalCount}/${GLOBAL_LIMIT}.`);
+  console.log(`[RATE LIMIT] IP ${clientIp} has used ${ipCount + 1}/${PER_IP_LIMIT} requests. [${requestId}]`);
+  console.log(`[RATE LIMIT] Total requests used: ${globalCount}/${GLOBAL_LIMIT}. [${requestId}]`);
 
-  // Proceed to the next middleware or route
   next();
 }
